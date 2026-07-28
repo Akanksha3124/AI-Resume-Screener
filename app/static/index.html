@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume Screener</title>
+<style>
+  :root {
+    --paper: #f6f3ec;
+    --ink: #1f2a24;
+    --ink-soft: #4a564e;
+    --line: #d8d2c2;
+    --accent: #2f5d4f;
+    --accent-soft: #e4ede9;
+    --stamp: #9c3b2e;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    min-height: 100vh;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px);
+    background-size: 100% 2.1rem;
+  }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+  }
+
+  header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 1.25rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+  }
+
+  header h1 {
+    font-size: 1.9rem;
+    margin: 0;
+    letter-spacing: 0.01em;
+  }
+
+  header .tag {
+    font-family: "Courier New", monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-soft);
+    border: 1px solid var(--ink-soft);
+    padding: 0.3rem 0.5rem;
+    white-space: nowrap;
+  }
+
+  .field {
+    margin-bottom: 1.5rem;
+  }
+
+  label {
+    display: block;
+    font-family: "Courier New", monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-soft);
+    margin-bottom: 0.5rem;
+  }
+
+  textarea {
+    width: 100%;
+    background: #fffdf8;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 0.98rem;
+    line-height: 1.5;
+    padding: 0.85rem 0.9rem;
+    resize: vertical;
+    min-height: 110px;
+  }
+
+  textarea:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  button {
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    font-family: "Courier New", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.82rem;
+    padding: 0.75rem 1.4rem;
+    cursor: pointer;
+  }
+
+  button:hover { background: var(--accent); }
+  button:disabled { background: var(--line); color: var(--ink-soft); cursor: not-allowed; }
+
+  .status {
+    font-family: "Courier New", monospace;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+  }
+
+  .error {
+    color: var(--stamp);
+    font-family: "Courier New", monospace;
+    font-size: 0.85rem;
+    margin-top: 1rem;
+    display: none;
+  }
+
+  #result {
+    margin-top: 2.5rem;
+    display: none;
+  }
+
+  .verdict {
+    border: 2px solid var(--ink);
+    padding: 1.75rem;
+    position: relative;
+    background: #fffdf8;
+  }
+
+  .verdict::before {
+    content: "ASSESSMENT";
+    position: absolute;
+    top: -0.65rem;
+    left: 1.5rem;
+    background: var(--paper);
+    padding: 0 0.5rem;
+    font-family: "Courier New", monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    color: var(--ink-soft);
+  }
+
+  .score-row {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .score-num {
+    font-size: 3.2rem;
+    line-height: 1;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .score-max {
+    font-family: "Courier New", monospace;
+    color: var(--ink-soft);
+    font-size: 1rem;
+  }
+
+  .stamp {
+    margin-left: auto;
+    border: 2px solid var(--stamp);
+    color: var(--stamp);
+    font-family: "Courier New", monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.3rem 0.6rem;
+    transform: rotate(-3deg);
+  }
+
+  .reason {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+  }
+
+  .keywords-label {
+    font-family: "Courier New", monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-soft);
+    margin-bottom: 0.6rem;
+  }
+
+  .keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .kw {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: "Courier New", monospace;
+    font-size: 0.78rem;
+    padding: 0.25rem 0.6rem;
+  }
+
+  footer {
+    margin-top: 3rem;
+    font-family: "Courier New", monospace;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+  }
+
+  footer input {
+    font-family: inherit;
+    font-size: inherit;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dotted var(--ink-soft);
+    color: var(--ink-soft);
+    width: 220px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Resume Screener</h1>
+      <span class="tag">RAG · v1.0</span>
+    </header>
+
+    <div class="field">
+      <label for="jobDesc">Job Description</label>
+      <textarea id="jobDesc" placeholder="Paste the job description here...">Looking for a Python developer with FastAPI and backend experience</textarea>
+    </div>
+
+    <div class="field">
+      <label for="resumeText">Candidate Resume</label>
+      <textarea id="resumeText" placeholder="Paste the candidate's resume text here...">Python developer with 5 years FastAPI experience</textarea>
+    </div>
+
+    <div class="actions">
+      <button id="scoreBtn">Score Candidate</button>
+      <span class="status" id="status"></span>
+    </div>
+
+    <div class="error" id="errorBox"></div>
+
+    <div id="result">
+      <div class="verdict">
+        <div class="score-row">
+          <span class="score-num" id="scoreNum">-</span>
+          <span class="score-max">/ 10</span>
+          <span class="stamp" id="stamp">Reviewed</span>
+        </div>
+        <div class="reason" id="reasonText"></div>
+        <div class="keywords-label">Matched Keywords</div>
+        <div class="keywords" id="keywordsBox"></div>
+      </div>
+    </div>
+
+    <footer>
+      API endpoint: <input id="apiUrl" value="http://localhost:8000" />
+    </footer>
+  </div>
+
+<script>
+  const scoreBtn = document.getElementById('scoreBtn');
+  const statusEl = document.getElementById('status');
+  const errorBox = document.getElementById('errorBox');
+  const resultBox = document.getElementById('result');
+
+  scoreBtn.addEventListener('click', async () => {
+    const jobDesc = document.getElementById('jobDesc').value.trim();
+    const resumeText = document.getElementById('resumeText').value.trim();
+    const apiUrl = document.getElementById('apiUrl').value.trim().replace(/\/$/, '');
+
+    errorBox.style.display = 'none';
+    resultBox.style.display = 'none';
+
+    if (!jobDesc || !resumeText) {
+      errorBox.textContent = 'Please fill in both the job description and resume text.';
+      errorBox.style.display = 'block';
+      return;
+    }
+
+    scoreBtn.disabled = true;
+    statusEl.textContent = 'Scoring...';
+
+    try {
+      const res = await fetch(`${apiUrl}/score`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ job_description: jobDesc, resume_text: resumeText })
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || `Request failed (${res.status})`);
+      }
+
+      const data = await res.json();
+
+      document.getElementById('scoreNum').textContent = data.score;
+      document.getElementById('reasonText').textContent = data.reason;
+
+      const kwBox = document.getElementById('keywordsBox');
+      kwBox.innerHTML = '';
+      (data.match_keywords || []).forEach(kw => {
+        const span = document.createElement('span');
+        span.className = 'kw';
+        span.textContent = kw;
+        kwBox.appendChild(span);
+      });
+
+      const stamp = document.getElementById('stamp');
+      if (data.score >= 7) { stamp.textContent = 'Strong Match'; }
+      else if (data.score >= 4) { stamp.textContent = 'Possible Fit'; }
+      else { stamp.textContent = 'Weak Match'; }
+
+      resultBox.style.display = 'block';
+      statusEl.textContent = '';
+    } catch (err) {
+      errorBox.textContent = `Error: ${err.message}. Make sure the API is running and the endpoint above is correct (CORS must be enabled on the server).`;
+      errorBox.style.display = 'block';
+      statusEl.textContent = '';
+    } finally {
+      scoreBtn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
