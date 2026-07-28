@@ -106,3 +106,47 @@ Rate this candidate 1-10 for the role. Return ONLY valid JSON with:
             }
         
         return result
+    
+    def score_resume_direct(self, job_description: str, resume_text: str):
+        """Score a single resume's full text directly against a job description (no retrieval needed)."""
+        prompt = PromptTemplate(
+            template="""Job Description:
+{job_desc}
+
+Candidate Resume:
+{resume_text}
+
+Rate this candidate 1-10 for the role. Return ONLY valid JSON with:
+{{"score": <number 1-10>, "reason": "<brief explanation>", "match_keywords": ["keyword1", "keyword2"]}}""",
+            input_variables=["job_desc", "resume_text"]
+        )
+
+        self.llm = ChatOpenAI(
+            model=self.model,
+            temperature=0,
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENAI_API_KEY")
+        )
+        chain = prompt | self.llm
+
+        try:
+            response = chain.invoke({
+                "job_desc": job_description,
+                "resume_text": resume_text[:6000]
+            })
+
+            response_text = response.content.strip()
+            if response_text.startswith("```json"):
+                response_text = response_text[7:]
+            if response_text.startswith("```"):
+                response_text = response_text[3:]
+            if response_text.endswith("```"):
+                response_text = response_text[:-3]
+
+            result = json.loads(response_text.strip())
+        except json.JSONDecodeError:
+            result = {"score": 5, "reason": "JSON parse error", "match_keywords": []}
+        except Exception as e:
+            result = {"score": 0, "reason": f"Error: {str(e)}", "match_keywords": []}
+
+        return result

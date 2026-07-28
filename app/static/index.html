@@ -23,13 +23,12 @@
     color: var(--ink);
     font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
     min-height: 100vh;
-    background-image:
-      linear-gradient(var(--line) 1px, transparent 1px);
+    background-image: linear-gradient(var(--line) 1px, transparent 1px);
     background-size: 100% 2.1rem;
   }
 
   .wrap {
-    max-width: 760px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 3rem 1.5rem 4rem;
   }
@@ -44,11 +43,7 @@
     gap: 1rem;
   }
 
-  header h1 {
-    font-size: 1.9rem;
-    margin: 0;
-    letter-spacing: 0.01em;
-  }
+  header h1 { font-size: 1.9rem; margin: 0; letter-spacing: 0.01em; }
 
   header .tag {
     font-family: "Courier New", monospace;
@@ -61,9 +56,7 @@
     white-space: nowrap;
   }
 
-  .field {
-    margin-bottom: 1.5rem;
-  }
+  .field { margin-bottom: 1.5rem; }
 
   label {
     display: block;
@@ -88,9 +81,51 @@
     min-height: 110px;
   }
 
-  textarea:focus {
-    outline: 2px solid var(--accent);
-    outline-offset: 1px;
+  textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .dropzone {
+    border: 2px dashed var(--ink-soft);
+    background: #fffdf8;
+    padding: 1.75rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .dropzone:hover, .dropzone.dragover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .dropzone input { display: none; }
+
+  .dropzone p {
+    margin: 0;
+    font-family: "Courier New", monospace;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+  }
+
+  .file-list { margin-top: 0.9rem; }
+
+  .file-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: "Courier New", monospace;
+    font-size: 0.78rem;
+    padding: 0.3rem 0.6rem;
+    margin: 0.2rem 0.3rem 0.2rem 0;
+  }
+
+  .file-chip button {
+    all: unset;
+    cursor: pointer;
+    color: var(--stamp);
+    font-weight: 700;
   }
 
   .actions {
@@ -100,7 +135,7 @@
     margin-top: 2rem;
   }
 
-  button {
+  button.primary {
     background: var(--ink);
     color: var(--paper);
     border: none;
@@ -112,14 +147,10 @@
     cursor: pointer;
   }
 
-  button:hover { background: var(--accent); }
-  button:disabled { background: var(--line); color: var(--ink-soft); cursor: not-allowed; }
+  button.primary:hover { background: var(--accent); }
+  button.primary:disabled { background: var(--line); color: var(--ink-soft); cursor: not-allowed; }
 
-  .status {
-    font-family: "Courier New", monospace;
-    font-size: 0.8rem;
-    color: var(--ink-soft);
-  }
+  .status { font-family: "Courier New", monospace; font-size: 0.8rem; color: var(--ink-soft); }
 
   .error {
     color: var(--stamp);
@@ -129,91 +160,84 @@
     display: none;
   }
 
-  #result {
-    margin-top: 2.5rem;
-    display: none;
+  #resultsSection { margin-top: 2.5rem; display: none; }
+
+  #resultsSection h2 {
+    font-size: 1.1rem;
+    font-family: "Courier New", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.6rem;
+    margin-bottom: 1.2rem;
   }
 
-  .verdict {
+  .candidate-card {
     border: 2px solid var(--ink);
-    padding: 1.75rem;
-    position: relative;
     background: #fffdf8;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    position: relative;
   }
 
-  .verdict::before {
-    content: "ASSESSMENT";
+  .candidate-card .rank-badge {
     position: absolute;
-    top: -0.65rem;
+    top: -0.75rem;
     left: 1.5rem;
-    background: var(--paper);
-    padding: 0 0.5rem;
+    background: var(--ink);
+    color: var(--paper);
     font-family: "Courier New", monospace;
     font-size: 0.7rem;
-    letter-spacing: 0.14em;
-    color: var(--ink-soft);
+    letter-spacing: 0.1em;
+    padding: 0.2rem 0.55rem;
   }
 
-  .score-row {
+  .candidate-top {
     display: flex;
+    justify-content: space-between;
     align-items: baseline;
     gap: 1rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.9rem;
+    flex-wrap: wrap;
   }
 
-  .score-num {
-    font-size: 3.2rem;
-    line-height: 1;
-    font-weight: 700;
-    color: var(--accent);
-  }
+  .filename { font-weight: 700; font-size: 1.05rem; }
 
-  .score-max {
-    font-family: "Courier New", monospace;
-    color: var(--ink-soft);
-    font-size: 1rem;
-  }
+  .score-num { font-size: 2.2rem; font-weight: 700; color: var(--accent); line-height: 1; }
+  .score-max { font-family: "Courier New", monospace; color: var(--ink-soft); font-size: 0.85rem; }
 
   .stamp {
-    margin-left: auto;
     border: 2px solid var(--stamp);
     color: var(--stamp);
     font-family: "Courier New", monospace;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    padding: 0.3rem 0.6rem;
+    padding: 0.25rem 0.5rem;
     transform: rotate(-3deg);
   }
 
-  .reason {
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 1.25rem;
-  }
+  .reason { font-size: 0.95rem; line-height: 1.55; margin-bottom: 1rem; }
 
   .keywords-label {
     font-family: "Courier New", monospace;
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     color: var(--ink-soft);
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.5rem;
   }
 
-  .keywords {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
+  .keywords { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 
   .kw {
     background: var(--accent-soft);
     border: 1px solid var(--accent);
     color: var(--accent);
     font-family: "Courier New", monospace;
-    font-size: 0.78rem;
-    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.55rem;
   }
 
   footer {
@@ -230,7 +254,7 @@
     border: none;
     border-bottom: 1px dotted var(--ink-soft);
     color: var(--ink-soft);
-    width: 220px;
+    width: 260px;
   }
 </style>
 </head>
@@ -238,7 +262,7 @@
   <div class="wrap">
     <header>
       <h1>Resume Screener</h1>
-      <span class="tag">RAG · v1.0</span>
+      <span class="tag">RAG · v1.1</span>
     </header>
 
     <div class="field">
@@ -247,63 +271,114 @@
     </div>
 
     <div class="field">
-      <label for="resumeText">Candidate Resume</label>
-      <textarea id="resumeText" placeholder="Paste the candidate's resume text here...">Python developer with 5 years FastAPI experience</textarea>
+      <label>Candidate Resumes (PDF)</label>
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="fileInput" accept="application/pdf" multiple />
+        <p>Click to choose PDF files, or drag and drop them here</p>
+      </div>
+      <div class="file-list" id="fileList"></div>
     </div>
 
     <div class="actions">
-      <button id="scoreBtn">Score Candidate</button>
+      <button class="primary" id="scoreBtn">Score Candidates</button>
       <span class="status" id="status"></span>
     </div>
 
     <div class="error" id="errorBox"></div>
 
-    <div id="result">
-      <div class="verdict">
-        <div class="score-row">
-          <span class="score-num" id="scoreNum">-</span>
-          <span class="score-max">/ 10</span>
-          <span class="stamp" id="stamp">Reviewed</span>
-        </div>
-        <div class="reason" id="reasonText"></div>
-        <div class="keywords-label">Matched Keywords</div>
-        <div class="keywords" id="keywordsBox"></div>
-      </div>
+    <div id="resultsSection">
+      <h2>Ranked Results</h2>
+      <div id="candidatesContainer"></div>
     </div>
 
     <footer>
-      API endpoint: <input id="apiUrl" value="http://localhost:8000" />
+      API endpoint: <input id="apiUrl" value="" placeholder="leave blank if served from same app" />
     </footer>
   </div>
 
 <script>
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const fileListEl = document.getElementById('fileList');
   const scoreBtn = document.getElementById('scoreBtn');
   const statusEl = document.getElementById('status');
   const errorBox = document.getElementById('errorBox');
-  const resultBox = document.getElementById('result');
+  const resultsSection = document.getElementById('resultsSection');
+  const candidatesContainer = document.getElementById('candidatesContainer');
+
+  let selectedFiles = [];
+
+  dropzone.addEventListener('click', () => fileInput.click());
+
+  dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('dragover');
+  });
+
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    addFiles(e.dataTransfer.files);
+  });
+
+  fileInput.addEventListener('change', (e) => addFiles(e.target.files));
+
+  function addFiles(fileListArg) {
+    for (const f of fileListArg) {
+      if (f.type === 'application/pdf' && !selectedFiles.some(existing => existing.name === f.name && existing.size === f.size)) {
+        selectedFiles.push(f);
+      }
+    }
+    renderFileList();
+  }
+
+  function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    renderFileList();
+  }
+
+  function renderFileList() {
+    fileListEl.innerHTML = '';
+    selectedFiles.forEach((f, i) => {
+      const chip = document.createElement('span');
+      chip.className = 'file-chip';
+      chip.innerHTML = `${f.name} <button data-idx="${i}">&times;</button>`;
+      chip.querySelector('button').addEventListener('click', () => removeFile(i));
+      fileListEl.appendChild(chip);
+    });
+  }
 
   scoreBtn.addEventListener('click', async () => {
     const jobDesc = document.getElementById('jobDesc').value.trim();
-    const resumeText = document.getElementById('resumeText').value.trim();
     const apiUrl = document.getElementById('apiUrl').value.trim().replace(/\/$/, '');
 
     errorBox.style.display = 'none';
-    resultBox.style.display = 'none';
+    resultsSection.style.display = 'none';
 
-    if (!jobDesc || !resumeText) {
-      errorBox.textContent = 'Please fill in both the job description and resume text.';
+    if (!jobDesc) {
+      errorBox.textContent = 'Please enter a job description.';
+      errorBox.style.display = 'block';
+      return;
+    }
+    if (selectedFiles.length === 0) {
+      errorBox.textContent = 'Please add at least one PDF resume.';
       errorBox.style.display = 'block';
       return;
     }
 
     scoreBtn.disabled = true;
-    statusEl.textContent = 'Scoring...';
+    statusEl.textContent = `Scoring ${selectedFiles.length} resume(s)...`;
 
     try {
-      const res = await fetch(`${apiUrl}/score`, {
+      const formData = new FormData();
+      formData.append('job_description', jobDesc);
+      selectedFiles.forEach(f => formData.append('files', f));
+
+      const res = await fetch(`${apiUrl}/score-resumes`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ job_description: jobDesc, resume_text: resumeText })
+        body: formData
       });
 
       if (!res.ok) {
@@ -312,34 +387,58 @@
       }
 
       const data = await res.json();
-
-      document.getElementById('scoreNum').textContent = data.score;
-      document.getElementById('reasonText').textContent = data.reason;
-
-      const kwBox = document.getElementById('keywordsBox');
-      kwBox.innerHTML = '';
-      (data.match_keywords || []).forEach(kw => {
-        const span = document.createElement('span');
-        span.className = 'kw';
-        span.textContent = kw;
-        kwBox.appendChild(span);
-      });
-
-      const stamp = document.getElementById('stamp');
-      if (data.score >= 7) { stamp.textContent = 'Strong Match'; }
-      else if (data.score >= 4) { stamp.textContent = 'Possible Fit'; }
-      else { stamp.textContent = 'Weak Match'; }
-
-      resultBox.style.display = 'block';
+      renderResults(data.results || []);
       statusEl.textContent = '';
     } catch (err) {
-      errorBox.textContent = `Error: ${err.message}. Make sure the API is running and the endpoint above is correct (CORS must be enabled on the server).`;
+      errorBox.textContent = `Error: ${err.message}. Make sure the API is running and reachable.`;
       errorBox.style.display = 'block';
       statusEl.textContent = '';
     } finally {
       scoreBtn.disabled = false;
     }
   });
+
+  function renderResults(results) {
+    candidatesContainer.innerHTML = '';
+
+    results.forEach((r, i) => {
+      const card = document.createElement('div');
+      card.className = 'candidate-card';
+
+      let stampText = 'Weak Match';
+      if (r.score >= 7) stampText = 'Strong Match';
+      else if (r.score >= 4) stampText = 'Possible Fit';
+
+      const keywordsHtml = (r.match_keywords || [])
+        .map(kw => `<span class="kw">${escapeHtml(kw)}</span>`)
+        .join('');
+
+      card.innerHTML = `
+        <span class="rank-badge">#${i + 1}</span>
+        <div class="candidate-top">
+          <span class="filename">${escapeHtml(r.filename || 'Unnamed file')}</span>
+          <div style="display:flex; align-items:baseline; gap:0.6rem;">
+            <span class="score-num">${r.score}</span>
+            <span class="score-max">/ 10</span>
+            <span class="stamp">${stampText}</span>
+          </div>
+        </div>
+        <div class="reason">${escapeHtml(r.reason || '')}</div>
+        <div class="keywords-label">Matched Keywords</div>
+        <div class="keywords">${keywordsHtml || '<span class="keywords-label">None found</span>'}</div>
+      `;
+
+      candidatesContainer.appendChild(card);
+    });
+
+    resultsSection.style.display = 'block';
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
 </script>
 </body>
 </html>
