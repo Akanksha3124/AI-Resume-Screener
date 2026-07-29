@@ -6,6 +6,9 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 import json
 import os
+import logging
+
+logger = logging.getLogger("resume_screener")
 
 class ResumeScreener:
     def __init__(self, resume_folder: str, model: str = "openai/gpt-3.5-turbo"):
@@ -27,11 +30,11 @@ class ResumeScreener:
                         loader = PyPDFLoader(os.path.join(self.resume_folder, file))
                         documents.extend(loader.load())
                     except Exception as e:
-                        print(f"Error loading {file}: {e}")
+                        logger.error(f"Error loading {file}: {e}")
         
         if not documents:
-            print(f"⚠️  No PDFs found in {self.resume_folder}")
-            print("Creating dummy documents for testing...")
+            logger.warning(f"No PDFs found in {self.resume_folder}")
+            logger.info("Creating dummy documents for testing...")
             from langchain_core.documents import Document
             documents = [
                 Document(page_content="Python developer with 5 years FastAPI experience"),
@@ -45,7 +48,7 @@ class ResumeScreener:
         # Create DB using free local embeddings (no API key needed)
         embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
         self.db = FAISS.from_documents(chunks, embeddings)
-        print(f"✓ Loaded {len(chunks)} chunks")
+        logger.info(f"Loaded {len(chunks)} chunks")
     
     def score_candidate(self, job_description: str, resume_text: str):
         """Score resume against job"""

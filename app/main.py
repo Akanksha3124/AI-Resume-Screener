@@ -1,6 +1,7 @@
 from fastapi import File, UploadFile, Form
 from typing import List
 import io
+import logging
 from PyPDF2 import PdfReader
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,6 +13,15 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+
+MAX_FILE_SIZE_MB = 5
+MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
+logger = logging.getLogger("resume_screener")
 
 app = FastAPI(
     title="Resume Screener API",
@@ -37,8 +47,9 @@ def serve_frontend():
 # Initialize RAG engine
 try:
     screener = ResumeScreener("data/resumes")
+    logger.info("Screener initialized successfully")
 except Exception as e:
-    print(f"Error initializing screener: {e}")
+    logger.error(f"Error initializing screener: {e}")
     screener = None
 
 class ScoringRequest(BaseModel):
@@ -82,11 +93,44 @@ async def score_resumes(
     if not screener:
         raise HTTPException(status_code=503, detail="Screener not initialized")
 
+    # Validate job description
+    if len(job_description.strip()) < 10:
+        raise HTTPException(
+            status_code=422,
+            detail="Job description is too short. Please provide at least 10 characters."
+        )
+
+    if not files:
+        raise HTTPException(status_code=422, detail="Please upload at least one file.")
+
     results = []
+    logger.info(f"Scoring {len(files)} resume(s) against job description ({len(job_description)} chars)")
 
     for file in files:
         try:
+            # Validate file type
+            if not file.filename.lower().endswith(".pdf"):
+                logger.warning(f"Rejected non-PDF file: {file.filename}")
+                results.append({
+                    "filename": file.filename,
+                    "score": 0,
+                    "reason": "File rejected: only PDF files are supported.",
+                    "match_keywords": []
+                })
+                continue
+
             contents = await file.read()
+
+            # Validate file size
+            if len(contents) > MAX_FILE_SIZE_BYTES:
+                logger.warning(f"Rejected oversized file: {file.filename} ({len(contents)} bytes)")
+                results.append({
+                    "filename": file.filename,
+                    "score": 0,
+                    "reason": f"File rejected: exceeds {MAX_FILE_SIZE_MB}MB size limit.",
+                    "match_keywords": []
+                })
+                continue
             pdf_reader = PdfReader(io.BytesIO(contents))
             resume_text = ""
             for page in pdf_reader.pages:
