@@ -2,6 +2,7 @@ from fastapi import File, UploadFile, Form
 from typing import List
 import io
 import logging
+from app.database import init_db, SessionLocal, ScoringResult
 from PyPDF2 import PdfReader
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -28,6 +29,7 @@ app = FastAPI(
     version="1.0",
     description="AI-powered resume screening using RAG"
 )
+init_db()
 
 # Allow the frontend to talk to this API
 app.add_middleware(
@@ -160,10 +162,52 @@ async def score_resumes(
             })
 
     # Rank by score, highest first
+    # Rank by score, highest first
     results.sort(key=lambda r: r["score"], reverse=True)
+
+    # Save each result to the database
+    db = SessionLocal()
+    try:
+        for r in results:
+            record = ScoringResult(
+                filename=r["filename"],
+                job_description=job_description,
+                score=r["score"],
+                reason=r["reason"],
+                match_keywords=",".join(r.get("match_keywords", []))
+            )
+            db.add(record)
+        db.commit()
+        logger.info(f"Saved {len(results)} scoring result(s) to database")
+    except Exception as e:
+        logger.error(f"Failed to save results to database: {e}")
+        db.rollback()
+    finally:
+        db.close()
 
     return {"results": results}
 
+@app.get("/history")
+def get_history(limit: int = 20):
+    """View past scoring results, most recent first."""
+    db = SessionLocal()
+    try:
+        records = db.query(ScoringResult).order_by(ScoringResult.created_at.desc()).limit(limit).all()
+        return {
+            "results": [
+                {
+                    "id": r.id,
+                    "filename": r.filename,
+                    "score": r.score,
+                    "reason": r.reason,
+                    "match_keywords": r.match_keywords.split(",") if r.match_keywords else [],
+                    "created_at": r.created_at.isoformat()
+                }
+                for r in records
+            ]
+        }
+    finally:
+        db.close()
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
